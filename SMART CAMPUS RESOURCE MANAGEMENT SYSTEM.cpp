@@ -4,616 +4,479 @@
 
 using namespace std;
 
-const int MAX_CAPACITY = 50;
+const int MAX_STUDENTS = 50;
+const int MAX_RESOURCES = 50;
 
-struct Student {
+const int MATRIX_ROWS = 4;
+const int MATRIX_COLS = 4;
+
+// ============================================================
+// STRUCTURES
+// ============================================================
+
+struct Student
+{
     int id;
     string name;
 };
 
-// ================= FUNCTION PROTOTYPES =================
+struct Resource
+{
+    int id;
+    string name;
+    int quantity;
+};
 
-int searchStudent(
-    const Student roster[],
-    int count,
-    int targetId,
-    int &comparisons
-);
+// ============================================================
+// FUNCTION PROTOTYPES
+// ============================================================
 
-bool addStudent(
-    Student roster[],
-    int &count,
-    int id,
-    const string &name
-);
+// Students
+void addStudent(Student* students, int& studentCount);
+void displayStudents(Student* students, int studentCount);
+void searchStudent(Student* students, int studentCount);
+void updateStudent(Student* students, int studentCount);
+void deleteStudent(Student* students, int& studentCount);
 
-bool updateStudent(
-    Student roster[],
-    int count,
-    int targetId,
-    const string &newName
-);
+// Resources
+void manageResources(Resource* resources, int& resourceCount);
+void displayResources(Resource* resources, int resourceCount);
 
-bool deleteStudent(
-    Student roster[],
-    int &count,
-    int targetId
-);
+// Array Traversal
+void arrayTraversal(Student* students, int studentCount,
+                    Resource* resources, int resourceCount);
 
-bool inspectRecord(
-    const Student roster[],
-    int count,
-    int index,
-    Student &outStudent
-);
+// Matrix
+void processMatrix(const int matrix[MATRIX_ROWS][MATRIX_COLS]);
 
-void displayStudents(
-    const Student roster[],
-    int count
-);
-
-void displayResources(
-    int count
-);
-
-void processMatrix(
-    const Student roster[],
-    int count
-);
-
-void generateReport(
-    const Student roster[],
-    int count
-);
+// Summary
+void summaryReport(Student* students, int studentCount,
+                   Resource* resources, int resourceCount);
 
 
-// ================= MAIN FUNCTION =================
+// ============================================================
+// MAIN SYSTEM MENU
+// ============================================================
 
-int main() {
+int main()
+{
+    Student students[MAX_STUDENTS];
+    Resource resources[MAX_RESOURCES];
 
-    Student roster[MAX_CAPACITY];
-    int currentCount = 0;
-    int choice = 0;
+    int studentCount = 0;
+    int resourceCount = 0;
 
-    do {
+    // Resource Utilization Matrix
+    int matrix[MATRIX_ROWS][MATRIX_COLS] =
+    {
+        {10, 20, 15, 25},
+        {15, 10, 20, 30},
+        {20, 25, 10, 15},
+        {30, 20, 25, 10}
+    };
 
-        cout << "\n=========================================\n";
-        cout << "       NTC CC105: STUDENT ROSTER\n";
-        cout << "=========================================\n";
-        cout << "1. Add Student Record\n";
-        cout << "2. Search Student by ID\n";
-        cout << "3. Update Student Record\n";
-        cout << "4. Delete Student by ID\n";
-        cout << "5. Safe Inspect Record by Index\n";
-        cout << "6. Display Full Roster\n";
+    int choice;
+
+    do
+    {
+        cout << "\n============================================\n";
+        cout << "        STUDENT RESOURCE SYSTEM\n";
+        cout << "============================================\n";
+        cout << "1. Add Student\n";
+        cout << "2. Display Students\n";
+        cout << "3. Search Student\n";
+        cout << "4. Update Student\n";
+        cout << "5. Delete Student\n";
+        cout << "6. Manage Resources\n";
         cout << "7. Display Resources\n";
-        cout << "8. Process Student Matrix\n";
-        cout << "9. Generate Report\n";
-        cout << "10. Exit\n";
-        cout << "Enter selection [1-10]: ";
+        cout << "8. Array Traversal\n";
+        cout << "9. Process Matrix\n";
+        cout << "10. Generate Summary Report\n";
+        cout << "11. Exit\n";
+        cout << "============================================\n";
+        cout << "Enter your choice: ";
         cin >> choice;
 
+        switch(choice)
+        {
+            case 1:
+                addStudent(students, studentCount);
+                break;
 
-        // ================= ADD STUDENT =================
+            case 2:
+                displayStudents(students, studentCount);
+                break;
 
-        if (choice == 1) {
+            case 3:
+                searchStudent(students, studentCount);
+                break;
 
-            int id;
-            string name;
+            case 4:
+                updateStudent(students, studentCount);
+                break;
 
-            cout << "\nEnter Student ID: ";
-            cin >> id;
+            case 5:
+                deleteStudent(students, studentCount);
+                break;
 
-            cin.ignore();
+            case 6:
+                manageResources(resources, resourceCount);
+                break;
 
-            cout << "Enter Student Name: ";
-            getline(cin, name);
+            case 7:
+                displayResources(resources, resourceCount);
+                break;
 
-            if (addStudent(
-                    roster,
-                    currentCount,
-                    id,
-                    name)) {
+            case 8:
+                arrayTraversal(students, studentCount,
+                               resources, resourceCount);
+                break;
 
-                cout << "Student added successfully!\n";
-            }
-            else {
+            case 9:
+                processMatrix(matrix);
+                break;
 
-                cout << "Unable to add student.\n";
-                cout << "ID may already exist or roster is full.\n";
-            }
+            case 10:
+                summaryReport(students, studentCount,
+                              resources, resourceCount);
+                break;
+
+            case 11:
+                cout << "\nExiting system...\n";
+                break;
+
+            default:
+                cout << "\nInvalid choice! Please try again.\n";
         }
 
-
-        // ================= SEARCH STUDENT =================
-
-        else if (choice == 2) {
-
-            int targetId;
-            int comparisons = 0;
-
-            cout << "\nEnter Student ID to search: ";
-            cin >> targetId;
-
-            int position = searchStudent(
-                roster,
-                currentCount,
-                targetId,
-                comparisons
-            );
-
-            if (position != -1) {
-
-                cout << "\nStudent Found!\n";
-                cout << "ID: "
-                     << roster[position].id << endl;
-
-                cout << "Name: "
-                     << roster[position].name << endl;
-
-                cout << "Comparisons made: "
-                     << comparisons << endl;
-            }
-            else {
-
-                cout << "\nStudent not found.\n";
-
-                cout << "Comparisons made: "
-                     << comparisons << endl;
-            }
-        }
-
-
-        // ================= UPDATE STUDENT =================
-
-        else if (choice == 3) {
-
-            int targetId;
-            string newName;
-
-            cout << "\nEnter Student ID to update: ";
-            cin >> targetId;
-
-            cin.ignore();
-
-            cout << "Enter New Student Name: ";
-            getline(cin, newName);
-
-            if (updateStudent(
-                    roster,
-                    currentCount,
-                    targetId,
-                    newName)) {
-
-                cout << "Student updated successfully!\n";
-            }
-            else {
-
-                cout << "Student ID not found.\n";
-            }
-        }
-
-
-        // ================= DELETE STUDENT =================
-
-        else if (choice == 4) {
-
-            int targetId;
-
-            cout << "\nEnter Student ID to delete: ";
-            cin >> targetId;
-
-            if (deleteStudent(
-                    roster,
-                    currentCount,
-                    targetId)) {
-
-                cout << "Student deleted successfully!\n";
-            }
-            else {
-
-                cout << "Student ID not found.\n";
-            }
-        }
-
-
-        // ================= INSPECT RECORD =================
-
-        else if (choice == 5) {
-
-            int index;
-            Student student;
-
-            cout << "\nEnter record index (0-"
-                 << currentCount - 1 << "): ";
-            cin >> index;
-
-            if (inspectRecord(
-                    roster,
-                    currentCount,
-                    index,
-                    student)) {
-
-                cout << "\nRecord Found!\n";
-                cout << "Index: " << index << endl;
-                cout << "ID: " << student.id << endl;
-                cout << "Name: "
-                     << student.name << endl;
-            }
-            else {
-
-                cout << "Invalid index. "
-                     << "Record does not exist.\n";
-            }
-        }
-
-
-        // ================= DISPLAY STUDENTS =================
-
-        else if (choice == 6) {
-
-            displayStudents(
-                roster,
-                currentCount
-            );
-        }
-
-
-        // ================= DISPLAY RESOURCES =================
-
-        else if (choice == 7) {
-
-            displayResources(currentCount);
-        }
-
-
-        // ================= PROCESS MATRIX =================
-
-        else if (choice == 8) {
-
-            processMatrix(
-                roster,
-                currentCount
-            );
-        }
-
-
-        // ================= GENERATE REPORT =================
-
-        else if (choice == 9) {
-
-            generateReport(
-                roster,
-                currentCount
-            );
-        }
-
-
-        // ================= EXIT =================
-
-        else if (choice == 10) {
-
-            cout << "\nExiting system.\n";
-        }
-
-
-        // ================= INVALID CHOICE =================
-
-        else {
-
-            cout << "\nInvalid selection. "
-                 << "Please choose 1-10.\n";
-        }
-
-    } while (choice != 10);
+    } while(choice != 11);
 
     return 0;
 }
 
 
-// ======================================================
-// FUNCTION 1: SEARCH STUDENT
-// ======================================================
+// ============================================================
+// STUDENT FUNCTIONS
+// ============================================================
 
-int searchStudent(
-    const Student roster[],
-    int count,
-    int targetId,
-    int &comparisons
-) {
-
-    comparisons = 0;
-
-    for (int i = 0; i < count; i++) {
-
-        comparisons++;
-
-        if (roster[i].id == targetId) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-
-// ======================================================
-// FUNCTION 2: ADD STUDENT
-// ======================================================
-
-bool addStudent(
-    Student roster[],
-    int &count,
-    int id,
-    const string &name
-) {
-
-    if (count >= MAX_CAPACITY) {
-        return false;
-    }
-
-    int comparisons;
-
-    if (searchStudent(
-            roster,
-            count,
-            id,
-            comparisons) != -1) {
-
-        return false;
-    }
-
-    roster[count].id = id;
-    roster[count].name = name;
-
-    count++;
-
-    return true;
-}
-
-
-// ======================================================
-// FUNCTION 3: UPDATE STUDENT
-// ======================================================
-
-bool updateStudent(
-    Student roster[],
-    int count,
-    int targetId,
-    const string &newName
-) {
-
-    int comparisons;
-
-    int position = searchStudent(
-        roster,
-        count,
-        targetId,
-        comparisons
-    );
-
-    if (position == -1) {
-        return false;
-    }
-
-    roster[position].name = newName;
-
-    return true;
-}
-
-
-// ======================================================
-// FUNCTION 4: DELETE STUDENT
-// ======================================================
-
-bool deleteStudent(
-    Student roster[],
-    int &count,
-    int targetId
-) {
-
-    int comparisons;
-
-    int position = searchStudent(
-        roster,
-        count,
-        targetId,
-        comparisons
-    );
-
-    if (position == -1) {
-        return false;
-    }
-
-    for (int i = position; i < count - 1; i++) {
-        roster[i] = roster[i + 1];
-    }
-
-    count--;
-
-    return true;
-}
-
-
-// ======================================================
-// FUNCTION 5: INSPECT RECORD
-// ======================================================
-
-bool inspectRecord(
-    const Student roster[],
-    int count,
-    int index,
-    Student &outStudent
-) {
-
-    if (index < 0 || index >= count) {
-        return false;
-    }
-
-    outStudent = roster[index];
-
-    return true;
-}
-
-
-// ======================================================
-// FUNCTION 6: DISPLAY STUDENTS
-// ======================================================
-
-void displayStudents(
-    const Student roster[],
-    int count
-) {
-
-    if (count == 0) {
-
-        cout << "\nRoster is empty.\n";
+void addStudent(Student* students, int& studentCount)
+{
+    if(studentCount >= MAX_STUDENTS)
+    {
+        cout << "\nStudent storage is full.\n";
         return;
     }
 
-    cout << "\n================ STUDENT ROSTER ================\n";
+    cout << "\n========== ADD STUDENT ==========\n";
 
-    cout << left
-         << setw(10) << "Index"
-         << setw(15) << "Student ID"
-         << setw(30) << "Name"
-         << endl;
+    cout << "Enter Student ID: ";
+    cin >> students[studentCount].id;
 
-    cout << "-------------------------------------------------\n";
+    cin.ignore();
 
-    for (int i = 0; i < count; i++) {
+    cout << "Enter Student Name: ";
+    getline(cin, students[studentCount].name);
 
-        cout << left
-             << setw(10) << i
-             << setw(15) << roster[i].id
-             << setw(30) << roster[i].name
-             << endl;
-    }
+    studentCount++;
 
-    cout << "=================================================\n";
-
-    cout << "Total Students: "
-         << count << endl;
+    cout << "\nStudent added successfully!\n";
 }
 
 
-// ======================================================
-// FUNCTION 7: DISPLAY RESOURCES
-// ======================================================
+void displayStudents(Student* students, int studentCount)
+{
+    cout << "\n========== DISPLAY STUDENTS ==========\n";
 
-void displayResources(
-    int count
-) {
-
-    int availableSlots = MAX_CAPACITY - count;
-
-    cout << "\n=========================================\n";
-    cout << "          SYSTEM RESOURCES\n";
-    cout << "=========================================\n";
-
-    cout << "Maximum Capacity : "
-         << MAX_CAPACITY << endl;
-
-    cout << "Current Students : "
-         << count << endl;
-
-    cout << "Available Slots  : "
-         << availableSlots << endl;
-
-    if (availableSlots == 0) {
-        cout << "Roster Status    : FULL\n";
-    }
-    else {
-        cout << "Roster Status    : AVAILABLE\n";
-    }
-
-    cout << "=========================================\n";
-}
-
-
-// ======================================================
-// FUNCTION 8: PROCESS MATRIX
-// ======================================================
-
-void processMatrix(
-    const Student roster[],
-    int count
-) {
-
-    if (count == 0) {
-
-        cout << "\nNo student records to process.\n";
+    if(studentCount == 0)
+    {
+        cout << "No students available.\n";
         return;
     }
 
-    cout << "\n=========================================\n";
-    cout << "        PROCESSED STUDENT MATRIX\n";
-    cout << "=========================================\n";
-
     cout << left
-         << setw(10) << "Row"
-         << setw(15) << "Student ID"
-         << setw(30) << "Name"
-         << endl;
+         << setw(10) << "ID"
+         << setw(25) << "Name" << endl;
 
-    cout << "-------------------------------------------------\n";
+    cout << "-----------------------------------\n";
 
-    for (int i = 0; i < count; i++) {
-
+    for(int i = 0; i < studentCount; i++)
+    {
         cout << left
-             << setw(10) << i
-             << setw(15) << roster[i].id
-             << setw(30) << roster[i].name
+             << setw(10) << students[i].id
+             << setw(25) << students[i].name
              << endl;
     }
-
-    cout << "=========================================\n";
-
-    cout << "Matrix processing completed.\n";
 }
 
 
-// ======================================================
-// FUNCTION 9: GENERATE REPORT
-// ======================================================
+void searchStudent(Student* students, int studentCount)
+{
+    int id;
+    bool found = false;
 
-void generateReport(
-    const Student roster[],
-    int count
-) {
+    cout << "\n========== SEARCH STUDENT ==========\n";
+    cout << "Enter Student ID: ";
+    cin >> id;
 
-    cout << "\n=========================================\n";
-    cout << "          STUDENT ROSTER REPORT\n";
-    cout << "=========================================\n";
+    for(int i = 0; i < studentCount; i++)
+    {
+        if(students[i].id == id)
+        {
+            cout << "\nStudent Found!\n";
+            cout << "ID: " << students[i].id << endl;
+            cout << "Name: " << students[i].name << endl;
 
-    cout << "Total Students: "
-         << count << endl;
-
-    cout << "Maximum Capacity: "
-         << MAX_CAPACITY << endl;
-
-    cout << "Available Slots: "
-         << MAX_CAPACITY - count << endl;
-
-    cout << "\nStudent Records:\n";
-
-    if (count == 0) {
-
-        cout << "No student records available.\n";
-    }
-    else {
-
-        for (int i = 0; i < count; i++) {
-
-            cout << i + 1 << ". "
-                 << roster[i].id
-                 << " - "
-                 << roster[i].name
-                 << endl;
+            found = true;
+            break;
         }
     }
 
-    cout << "\n=========================================\n";
-    cout << "Report generation completed.\n";
-    cout << "=========================================\n";
+    if(!found)
+        cout << "\nStudent not found.\n";
+}
+
+
+void updateStudent(Student* students, int studentCount)
+{
+    int id;
+    bool found = false;
+
+    cout << "\n========== UPDATE STUDENT ==========\n";
+    cout << "Enter Student ID: ";
+    cin >> id;
+
+    for(int i = 0; i < studentCount; i++)
+    {
+        if(students[i].id == id)
+        {
+            cin.ignore();
+
+            cout << "Enter new name: ";
+            getline(cin, students[i].name);
+
+            cout << "\nStudent updated successfully!\n";
+
+            found = true;
+            break;
+        }
+    }
+
+    if(!found)
+        cout << "\nStudent not found.\n";
+}
+
+
+void deleteStudent(Student* students, int& studentCount)
+{
+    int id;
+    bool found = false;
+
+    cout << "\n========== DELETE STUDENT ==========\n";
+    cout << "Enter Student ID: ";
+    cin >> id;
+
+    for(int i = 0; i < studentCount; i++)
+    {
+        if(students[i].id == id)
+        {
+            for(int j = i; j < studentCount - 1; j++)
+            {
+                students[j] = students[j + 1];
+            }
+
+            studentCount--;
+
+            cout << "\nStudent deleted successfully!\n";
+
+            found = true;
+            break;
+        }
+    }
+
+    if(!found)
+        cout << "\nStudent not found.\n";
+}
+
+
+// ============================================================
+// RESOURCE FUNCTIONS
+// ============================================================
+
+void manageResources(Resource* resources, int& resourceCount)
+{
+    if(resourceCount >= MAX_RESOURCES)
+    {
+        cout << "\nResource storage is full.\n";
+        return;
+    }
+
+    cout << "\n========== ADD RESOURCE ==========\n";
+
+    cout << "Enter Resource ID: ";
+    cin >> resources[resourceCount].id;
+
+    cin.ignore();
+
+    cout << "Enter Resource Name: ";
+    getline(cin, resources[resourceCount].name);
+
+    cout << "Enter Quantity: ";
+    cin >> resources[resourceCount].quantity;
+
+    resourceCount++;
+
+    cout << "\nResource added successfully!\n";
+}
+
+
+void displayResources(Resource* resources, int resourceCount)
+{
+    cout << "\n========== DISPLAY RESOURCES ==========\n";
+
+    if(resourceCount == 0)
+    {
+        cout << "No resources available.\n";
+        return;
+    }
+
+    cout << left
+         << setw(10) << "ID"
+         << setw(25) << "Resource"
+         << setw(10) << "Quantity"
+         << endl;
+
+    cout << "---------------------------------------------\n";
+
+    for(int i = 0; i < resourceCount; i++)
+    {
+        cout << left
+             << setw(10) << resources[i].id
+             << setw(25) << resources[i].name
+             << setw(10) << resources[i].quantity
+             << endl;
+    }
+}
+
+
+// ============================================================
+// ARRAY TRAVERSAL
+// ============================================================
+
+void arrayTraversal(Student* students, int studentCount,
+                    Resource* resources, int resourceCount)
+{
+    cout << "\n========== ARRAY TRAVERSAL ==========\n";
+
+    cout << "\nStudents:\n";
+
+    for(int i = 0; i < studentCount; i++)
+    {
+        cout << "Student[" << i << "] = "
+             << students[i].name << endl;
+    }
+
+    cout << "\nResources:\n";
+
+    for(int i = 0; i < resourceCount; i++)
+    {
+        cout << "Resource[" << i << "] = "
+             << resources[i].name << endl;
+    }
+}
+
+
+// ============================================================
+// MATRIX PROCESSING
+// ============================================================
+
+void processMatrix(const int matrix[MATRIX_ROWS][MATRIX_COLS])
+{
+    string depts[MATRIX_ROWS] =
+    {
+        "D1-IT Dept.",
+        "D2-Engineering",
+        "D3-Business",
+        "D4-Education"
+    };
+
+    cout << "\n";
+    cout << "       Resource Utilization Matrix (Hours/Week)\n\n";
+
+    cout << left
+         << setw(20) << "Department"
+         << setw(10) << "R-01"
+         << setw(10) << "R-02"
+         << setw(10) << "R-03"
+         << setw(10) << "R-04"
+         << setw(10) << "Total"
+         << "\n";
+
+    cout << "-----------------------------------------------------------------\n";
+
+    int colTotals[MATRIX_COLS] = {0};
+
+    for(int i = 0; i < MATRIX_ROWS; i++)
+    {
+        int rowTotal = 0;
+
+        cout << left << setw(20) << depts[i];
+
+        for(int j = 0; j < MATRIX_COLS; j++)
+        {
+            cout << setw(10) << matrix[i][j];
+
+            rowTotal += matrix[i][j];
+            colTotals[j] += matrix[i][j];
+        }
+
+        cout << rowTotal << "\n";
+    }
+
+    cout << "\n";
+    cout << left << setw(20) << "Column Totals:";
+
+    for(int j = 0; j < MATRIX_COLS; j++)
+    {
+        cout << setw(10) << colTotals[j];
+    }
+
+    cout << "\n";
+}
+
+
+// ============================================================
+// SUMMARY REPORT
+// ============================================================
+
+void summaryReport(Student* students, int studentCount,
+                   Resource* resources, int resourceCount)
+{
+    cout << "\n============================================\n";
+    cout << "              SUMMARY REPORT\n";
+    cout << "============================================\n";
+
+    cout << "Total Students  : " << studentCount << endl;
+    cout << "Total Resources : " << resourceCount << endl;
+
+    cout << "\nStudent List:\n";
+
+    for(int i = 0; i < studentCount; i++)
+    {
+        cout << i + 1 << ". "
+             << students[i].id << " - "
+             << students[i].name << endl;
+    }
+
+    cout << "\nResource List:\n";
+
+    for(int i = 0; i < resourceCount; i++)
+    {
+        cout << i + 1 << ". "
+             << resources[i].name
+             << " (Qty: "
+             << resources[i].quantity
+             << ")" << endl;
+    }
+
+    cout << "============================================\n";
 }
