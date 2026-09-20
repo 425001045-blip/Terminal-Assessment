@@ -10,9 +10,10 @@ const int MAX_RESOURCES = 50;
 const int MATRIX_ROWS = 4;
 const int MATRIX_COLS = 4;
 
-// ============================================================
+
+// ========================================================
 // STRUCTURES
-// ============================================================
+// ========================================================
 
 struct Student
 {
@@ -27,46 +28,60 @@ struct Resource
     int quantity;
 };
 
-// ============================================================
-// FUNCTION PROTOTYPES
-// ============================================================
 
-// Students
+// ========================================================
+// FUNCTION PROTOTYPES
+// ========================================================
+
+// students
 void addStudent(Student* students, int& studentCount);
 void displayStudents(Student* students, int studentCount);
 void searchStudent(Student* students, int studentCount);
 void updateStudent(Student* students, int studentCount);
 void deleteStudent(Student* students, int& studentCount);
 
-// Resources
+// resources
 void manageResources(Resource* resources, int& resourceCount);
 void displayResources(Resource* resources, int resourceCount);
 
-// Array Traversal
+// array traversals
 void arrayTraversal(Student* students, int studentCount,
                     Resource* resources, int resourceCount);
 
-// Matrix
+// matrix
 void processMatrix(const int matrix[MATRIX_ROWS][MATRIX_COLS]);
 
-// Summary
+// summaries
 void summaryReport(Student* students, int studentCount,
                    Resource* resources, int resourceCount);
 
 
-// ============================================================
-// MAIN SYSTEM MENU
-// ============================================================
+// ========================================================
+// MAIN
+// ========================================================
 
 int main()
 {
-    Student students[MAX_STUDENTS];
-    Resource resources[MAX_RESOURCES];
+    // ========================================================
+    // DYNAMIC MEMORY ALLOCATION
+    // ========================================================
+
+    Student* students;
+    Resource* resources;
+
+    students = new Student[MAX_STUDENTS];
+    resources = new Resource[MAX_RESOURCES];
 
     int studentCount = 0;
     int resourceCount = 0;
 
-    // Resource Utilization Matrix
+    int choice;
+
+
+    // ========================================================
+    // MATRIX DATA
+    // ========================================================
+
     int matrix[MATRIX_ROWS][MATRIX_COLS] =
     {
         {10, 20, 15, 25},
@@ -75,7 +90,10 @@ int main()
         {30, 20, 25, 10}
     };
 
-    int choice;
+
+    // ========================================================
+    // SYSTEM MENU
+    // ========================================================
 
     do
     {
@@ -96,6 +114,7 @@ int main()
         cout << "============================================\n";
         cout << "Enter your choice: ";
         cin >> choice;
+
 
         switch(choice)
         {
@@ -151,13 +170,23 @@ int main()
 
     } while(choice != 11);
 
+
+    // ========================================================
+    // PROPER DEALLOCATION
+    // ========================================================
+
+    delete[] students;
+    delete[] resources;
+
+    cout << "\nDynamic memory successfully released.\n";
+
     return 0;
 }
 
 
-// ============================================================
-// STUDENT FUNCTIONS
-// ============================================================
+// ========================================================
+// ADD STUDENT
+// ========================================================
 
 void addStudent(Student* students, int& studentCount)
 {
@@ -183,6 +212,10 @@ void addStudent(Student* students, int& studentCount)
 }
 
 
+// ========================================================
+// DISPLAY STUDENTS
+// ========================================================
+
 void displayStudents(Student* students, int studentCount)
 {
     cout << "\n========== DISPLAY STUDENTS ==========\n";
@@ -195,7 +228,8 @@ void displayStudents(Student* students, int studentCount)
 
     cout << left
          << setw(10) << "ID"
-         << setw(25) << "Name" << endl;
+         << setw(25) << "Name"
+         << endl;
 
     cout << "-----------------------------------\n";
 
@@ -209,12 +243,23 @@ void displayStudents(Student* students, int studentCount)
 }
 
 
+// ========================================================
+// SEARCH STUDENT
+// ========================================================
+
 void searchStudent(Student* students, int studentCount)
 {
     int id;
     bool found = false;
 
     cout << "\n========== SEARCH STUDENT ==========\n";
+
+    if(studentCount == 0)
+    {
+        cout << "No students available.\n";
+        return;
+    }
+
     cout << "Enter Student ID: ";
     cin >> id;
 
@@ -223,8 +268,8 @@ void searchStudent(Student* students, int studentCount)
         if(students[i].id == id)
         {
             cout << "\nStudent Found!\n";
-            cout << "ID: " << students[i].id << endl;
-            cout << "Name: " << students[i].name << endl;
+            cout << "Student ID   : " << students[i].id << endl;
+            cout << "Student Name : " << students[i].name << endl;
 
             found = true;
             break;
@@ -232,9 +277,15 @@ void searchStudent(Student* students, int studentCount)
     }
 
     if(!found)
+    {
         cout << "\nStudent not found.\n";
+    }
 }
 
+
+// ========================================================
+// UPDATE STUDENT
+// ========================================================
 
 void updateStudent(Student* students, int studentCount)
 {
@@ -242,6 +293,13 @@ void updateStudent(Student* students, int studentCount)
     bool found = false;
 
     cout << "\n========== UPDATE STUDENT ==========\n";
+
+    if(studentCount == 0)
+    {
+        cout << "No students available.\n";
+        return;
+    }
+
     cout << "Enter Student ID: ";
     cin >> id;
 
@@ -262,9 +320,15 @@ void updateStudent(Student* students, int studentCount)
     }
 
     if(!found)
+    {
         cout << "\nStudent not found.\n";
+    }
 }
 
+
+// ========================================================
+// DELETE STUDENT
+// ========================================================
 
 void deleteStudent(Student* students, int& studentCount)
 {
@@ -272,6 +336,13 @@ void deleteStudent(Student* students, int& studentCount)
     bool found = false;
 
     cout << "\n========== DELETE STUDENT ==========\n";
+
+    if(studentCount == 0)
+    {
+        cout << "No students available.\n";
+        return;
+    }
+
     cout << "Enter Student ID: ";
     cin >> id;
 
@@ -294,13 +365,15 @@ void deleteStudent(Student* students, int& studentCount)
     }
 
     if(!found)
+    {
         cout << "\nStudent not found.\n";
+    }
 }
 
 
-// ============================================================
-// RESOURCE FUNCTIONS
-// ============================================================
+// ========================================================
+// MANAGE RESOURCES
+// ========================================================
 
 void manageResources(Resource* resources, int& resourceCount)
 {
@@ -310,7 +383,7 @@ void manageResources(Resource* resources, int& resourceCount)
         return;
     }
 
-    cout << "\n========== ADD RESOURCE ==========\n";
+    cout << "\n========== MANAGE RESOURCE ==========\n";
 
     cout << "Enter Resource ID: ";
     cin >> resources[resourceCount].id;
@@ -328,6 +401,10 @@ void manageResources(Resource* resources, int& resourceCount)
     cout << "\nResource added successfully!\n";
 }
 
+
+// ========================================================
+// DISPLAY RESOURCES
+// ========================================================
 
 void displayResources(Resource* resources, int resourceCount)
 {
@@ -358,9 +435,9 @@ void displayResources(Resource* resources, int resourceCount)
 }
 
 
-// ============================================================
+// ========================================================
 // ARRAY TRAVERSAL
-// ============================================================
+// ========================================================
 
 void arrayTraversal(Student* students, int studentCount,
                     Resource* resources, int resourceCount)
@@ -385,9 +462,9 @@ void arrayTraversal(Student* students, int studentCount,
 }
 
 
-// ============================================================
-// MATRIX PROCESSING
-// ============================================================
+// ========================================================
+// PROCESS MATRIX
+// ========================================================
 
 void processMatrix(const int matrix[MATRIX_ROWS][MATRIX_COLS])
 {
@@ -409,7 +486,7 @@ void processMatrix(const int matrix[MATRIX_ROWS][MATRIX_COLS])
          << setw(10) << "R-03"
          << setw(10) << "R-04"
          << setw(10) << "Total"
-         << "\n";
+         << endl;
 
     cout << "-----------------------------------------------------------------\n";
 
@@ -429,10 +506,11 @@ void processMatrix(const int matrix[MATRIX_ROWS][MATRIX_COLS])
             colTotals[j] += matrix[i][j];
         }
 
-        cout << rowTotal << "\n";
+        cout << rowTotal << endl;
     }
 
     cout << "\n";
+
     cout << left << setw(20) << "Column Totals:";
 
     for(int j = 0; j < MATRIX_COLS; j++)
@@ -440,13 +518,13 @@ void processMatrix(const int matrix[MATRIX_ROWS][MATRIX_COLS])
         cout << setw(10) << colTotals[j];
     }
 
-    cout << "\n";
+    cout << endl;
 }
 
 
-// ============================================================
+// ========================================================
 // SUMMARY REPORT
-// ============================================================
+// ========================================================
 
 void summaryReport(Student* students, int studentCount,
                    Resource* resources, int resourceCount)
